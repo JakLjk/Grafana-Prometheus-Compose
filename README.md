@@ -1,4 +1,4 @@
-# Grafana-Prometeus-Compose
+# Grafana-Prometheus-Compose
 
 
 ## General Info
@@ -9,6 +9,9 @@ Initial setup has pre-configured exporters for cadvisor (for gathering docker im
 
 ## How to add new exporters
 In order to add new exporters, the prometeus config has to be extended with the new job names.
+
+## Grafana 
+Many pre-built dashboards can be found for free on the official Grafana webpage
 
 ## Caveats
 External port for prometheus was changed to 9091 to avoid conflicts.
