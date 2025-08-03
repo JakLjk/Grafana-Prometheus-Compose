@@ -1,0 +1,57 @@
+---
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+services:
+  prometheus:
+    image: docker.io/prom/prometheus:v3.5.0
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yaml
+      - --storage.tsdb.retention.time=7d
+      - --storage.tsdb.retention.size=4GB
+    ports:
+      - 9091:9090
+    volumes:
+      - /etc/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+    
+  grafana:
+    image: docker.io/grafana/grafana-oss:12.1.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    ports:
+      - "9100:9100"
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.52.1
+    container_name: cadvisor
+    ports:
+      - 8090:8080
+    volumes:
+      - /:/rootfs:ro
+      - /run:/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    restart: unless-stopped
